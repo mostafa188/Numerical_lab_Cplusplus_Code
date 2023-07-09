@@ -1,63 +1,53 @@
-#include<bits/stdc++.h>
+#include <bits/stdc++.h>
 using namespace std;
 
-const int MAX_ITERATIONS = 10000;
-float f(float x)
+double f(double x)
 {
-	return (1*pow(x, 3) + 2*x*x + 10*x - 20);
+    return x * x * x - x - 1;
 }
 
-void Muller(float a, float b, float c,int itr,double ep)
+double MullerMethod(double x0, double x1, double x2, double error)
 {
-	float res;
-    int cnt=0;
-    cout<<"------------------------------------------------------------------------------------------------------------------------------------\n";
-    cout<<"itr |    a   |    b    |    c  |   f(a)  |  f(b)  |   f(c) |   h1   |   h2   |    d1   |    d2   |    na  |   nb  |   nc  |  error \n";
-    cout<<"------------------------------------------------------------------------------------------------------------------------------------\n";
-
-	while(itr>cnt)
-	{
-		float f1 = f(a);
-		float f2 = f(b);
-		float f3 = f(c);
-
-		float d1 = f1 - f3;
-		float d2 = f2 - f3;
-
-		float h1 = a - c;
-		float h2 = b - c;
-
-		float a = f3;
-		float b = (((d2*pow(h1, 2)) - (d1*pow(h2, 2)))/ ((h1*h2) * (h1-h2)));
-		float c = (((d1*h2) - (d2*h1))/((h1*h2) * (h1-h2)));
-
-		float x = ((-2*a) / (b + abs(sqrt(b*b-4*a*c))));
-		float y = ((-2*a) / (b-abs(sqrt(b*b-4*a*c))));
-
-		if (x >= y)
-			res = x + c;
-		else
-			res = y + c;
-
-        cnt++;
-		double err = abs((res-c)/res);
-        printf("%2d  | %5.3lf | %5.3lf  | %5.3lf | %5.3lf | %5.3lf | %5.3lf | %5.3lf | %5.3lf | %5.3lf | %5.3lf | %5.3lf | %5.3lf | %5.3lf | %5.3lf |   %5.3lf%% \n",cnt,a,b,c,f1,f2,f3,h1,h2,d1,d2,b,c,res,err*100);
-        cout<<"------------------------------------------------------------------------------------------------------------------------------------\n";
-        if(err*10000 <= 1){
-            break;
+    double h1, h2, d1, d2, root, error1 = 100, a, b, c, x3;
+    int iteration=0;
+    
+    h1 = x1 - x0;
+    h2 = x2 - x1;
+    d1 = (f(x1) - f(x0)) / h1;
+    d2 = (f(x1) - f(x0)) / h1;
+    while (error1 >= error)
+    {
+        c = f(x2);
+        a = (d2 - d1) / (h1 + h2);
+        b = (h2 * a) + d2;
+        double dsk = sqrt(b * b - 4 * a * c), dominot;
+        if (abs(b + dsk) > abs(b - dsk))
+        {
+            dominot = b + dsk;
         }
-		a = b;
-		b = c;
-		c = res;
-	}
-	cout<<res<<" ";
+        else
+            dominot = b - dsk;
+        double dx = -2 * c / dominot;
+        x0 = x1;
+        x1 = x2;
+        x2 = x2 + dx;
+        h1 = x1 - x0;
+        h2 = x2 - x1;
+        d1 = (f(x1) - f(x0)) / h1;
+        d2 = (f(x1) - f(x0)) / h2;
+        root = x2;
+        error1 = abs((x2 - x1) / x2) * 100;
+        cout << "Iteration " << iteration << ": x0 = " << x0 << ", x1 = " << x1 << ", x2 = " << x2 << " ";
+        cout << "Percentage error: " << error1 << "%" << endl;
+    }
+    return root;
 }
 
-// Driver main function
 int main()
 {
-    freopen("mostafa","w",stdout);
-	float a = 0, b = 19, c = 20;
-	Muller(a, b, c,10,0.0001);
-	return 0;
+    double x0, x1, x2, error;
+    cin >> x0 >> x1 >> x2 >> error;
+    double root = MullerMethod(x0, x1, x2, error);
+    cout << "Root : " << root << endl;
+    return 0;
 }
