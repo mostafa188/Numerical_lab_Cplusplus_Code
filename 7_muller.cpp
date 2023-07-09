@@ -1,53 +1,61 @@
-#include <bits/stdc++.h>
+#include<bits/stdc++.h>
 using namespace std;
+int MAX_ITERATIONS = 10000;
 
-double f(double x)
+float f(float x)
 {
-    return x * x * x - x - 1;
+	
+	return 1*pow(x, 3) + 2*x*x + 10*x - 20;
 }
 
-double MullerMethod(double x0, double x1, double x2, double error)
+void Muller(float a, float b, float c)
 {
-    double h1, h2, d1, d2, root, error1 = 100, a, b, c, x3;
-    int iteration=0;
-    
-    h1 = x1 - x0;
-    h2 = x2 - x1;
-    d1 = (f(x1) - f(x0)) / h1;
-    d2 = (f(x1) - f(x0)) / h1;
-    while (error1 >= error)
-    {
-        c = f(x2);
-        a = (d2 - d1) / (h1 + h2);
-        b = (h2 * a) + d2;
-        double dsk = sqrt(b * b - 4 * a * c), dominot;
-        if (abs(b + dsk) > abs(b - dsk))
-        {
-            dominot = b + dsk;
-        }
-        else
-            dominot = b - dsk;
-        double dx = -2 * c / dominot;
-        x0 = x1;
-        x1 = x2;
-        x2 = x2 + dx;
-        h1 = x1 - x0;
-        h2 = x2 - x1;
-        d1 = (f(x1) - f(x0)) / h1;
-        d2 = (f(x1) - f(x0)) / h2;
-        root = x2;
-        error1 = abs((x2 - x1) / x2) * 100;
-        cout << "Iteration " << iteration << ": x0 = " << x0 << ", x1 = " << x1 << ", x2 = " << x2 << " ";
-        cout << "Percentage error: " << error1 << "%" << endl;
-    }
-    return root;
-}
+	int i;
+	float res;
 
+	for (i = 0;;++i)
+	{
+		float f1 = f(a);
+		float f2 = f(b);
+		float f3 = f(c);
+		float d1 = f1 - f3;
+		float d2 = f2 - f3;
+		float h1 = a - c;
+		float h2 = b - c;
+		float a0 = f3;
+		float a1 = (((d2*pow(h1, 2)) - (d1*pow(h2, 2)))
+					/ ((h1*h2) * (h1-h2)));
+		float a2 = (((d1*h2) - (d2*h1))/((h1*h2) * (h1-h2)));
+		float x = ((-2*a0) / (a1 + abs(sqrt(a1*a1-4*a0*a2))));
+		float y = ((-2*a0) / (a1-abs(sqrt(a1*a1-4*a0*a2))));
+
+		if (x >= y)
+			res = x + c;
+		else
+			res = y + c;
+
+		float m = res*100;
+		float n = c*100;
+		m = floor(m);
+		n = floor(n);
+		if (m == n)
+			break;
+		a = b;
+		b = c;
+		c = res;
+		if (i > MAX_ITERATIONS)
+		{
+			cout << "Root cannot be found using"
+				<< " Muller's method";
+			break;
+		}
+	}
+	if (i <= MAX_ITERATIONS)
+		cout << "The value of the root is " << res;
+}
 int main()
 {
-    double x0, x1, x2, error;
-    cin >> x0 >> x1 >> x2 >> error;
-    double root = MullerMethod(x0, x1, x2, error);
-    cout << "Root : " << root << endl;
-    return 0;
+	float a = 0, b = 1, c = 2;
+	Muller(a, b, c);
+	return 0;
 }
