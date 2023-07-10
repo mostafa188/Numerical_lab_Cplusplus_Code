@@ -25,7 +25,7 @@ double modified_newton_raphson(double a,int itr,double ep){
         if(((df(oroot)*df(oroot))-f(oroot)*ddf(oroot)) == 0){
             return INT_MIN;
         }
-        double nroot = (f(oroot) * df(oroot))/(pow(df(oroot),2) - (f(oroot)*ddf(oroot)));
+        double nroot = oroot - (f(oroot) * df(oroot))/(pow(df(oroot),2) - (f(oroot)*ddf(oroot)));
         cnt++;
         double err = abs(abs(abs(oroot) - abs(nroot))/nroot);
         if(err <= ep) return oroot;
